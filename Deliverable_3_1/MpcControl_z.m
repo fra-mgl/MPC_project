@@ -52,10 +52,8 @@ classdef MpcControl_z < MpcControlBase
             
             % state constraints
             % none
-            F = [0 -1];
-            f = 1;
 
-            linear_offset = 56.6667;
+            % linear_offset = 56.6667;
             % input constraints
             G = [1 -1]';
             % g = [80 -50]';
@@ -71,7 +69,7 @@ classdef MpcControl_z < MpcControlBase
             K = -K; % exercise u = Kx , matlab doc using u = -Kx
             
             % new state constraint -> intersection X and KG
-            O = polytope([F; G*K], [f;g]);
+            O = polytope(G*K, g);
             Acl = mpc.A+mpc.B*K;
             
             % new dynamics -> A+BK
@@ -93,8 +91,9 @@ classdef MpcControl_z < MpcControlBase
             obj = U(:,1)'*R*U(:,1);
             for i = 2:N-1
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
-                con = con + (F*X(:,i) <= f) + (G*U(:,i) <= g);
+                con = con + (G*U(:,i) <= g);
                 obj = obj + X(:,i)'*Q*X(:,i) + U(:,i)'*R*U(:,i);
+                % obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i)-U(:,i-1))'*R*U(:,i);
             end
             con = con + (M*X(:,N) <= m);
             obj = obj + X(:,N)'*P*X(:,N);

@@ -45,27 +45,28 @@ classdef MpcControl_roll < MpcControlBase
 
             % ----- COMPUTE TERMINAL INVARIANT SET ----- %
 
-            Q = 1 * eye(2);
+            Q = 18 * eye(2);
             R = 1;
             [K, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
             K = -K; % exercise u = Kx , matlab doc using u = -Kx
             
             % new state constraint -> intersection X and KG
-            X_ = Polyhedron(G*K, g);
+            O = polytope(G*K, g);
+            Acl = mpc.A+mpc.B*K;
             
             % new dynamics -> A+BK
-            omega_i = X_;
-            i = 0;
             while 1
-                preOmega_i = Polyhedron(omega_i.A * (mpc.A+mpc.B*K), omega_i.b);
-                omega_i_plus = Polyhedron([preOmega_i.A; omega_i.A], [preOmega_i.b; omega_i.b]);
-                if omega_i_plus == omega_i
-                    omega_inf = omega_i; % terminal invariant set
+                Oprev = O;
+                [FF, ff] = double(O);
+                Ocurr = polytope(FF * Acl, ff);
+                O = intersect(O, Ocurr);
+                if isequal(O, Oprev)
+                    omega_inf = O;
                     break;
                 end
-                omega_i = omega_i_plus;
-                i = i+1;
             end
+
+            [M, m] = double(omega_inf);
 
             % add constraints and objective to YALMIN optimization solver
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (G*U(:,1) <= g);
@@ -75,7 +76,7 @@ classdef MpcControl_roll < MpcControlBase
                 con = con + (G*U(:,i) <= g);
                 obj = obj + X(:,i)'*Q*X(:,i) + U(:,i)'*R*U(:,i);
             end
-            con = con + (omega_inf.A*X(:,N) <= omega_inf.b);
+            con = con + (M*X(:,N) <= m);
             obj = obj + X(:,N)'*P*X(:,N);
             
             %% YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
