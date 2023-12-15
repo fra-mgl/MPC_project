@@ -6,6 +6,7 @@ clear all
 clc
 
 % %% TODO: This file should produce all the plots for the deliverable
+% aggiungere xs e us su output del controller
 
 Ts = 1/20; % Sample time
 Tf = 7; % simulation end time
