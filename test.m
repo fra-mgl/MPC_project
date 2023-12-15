@@ -17,7 +17,7 @@ p = [0 0 0];
 % input
 d1 = 0.26; % ± 0.26
 d2 = 0;
-Pavg = 60; % 50 - 80
+Pavg = 56.67; % 50 - 80
 Pdiff = 0; % 20 - 80
 
 u = [d1, d2, Pavg, Pdiff]';
@@ -25,6 +25,8 @@ x = [w, phi, v, p]';
 x_dot = rocket.f(x, u);
 display_x_dot(x_dot);
 
+[xs, us] = rocket.trim();
+sys = rocket.linearize(xs,us);
 
 %% complete simulation
 rocket = Rocket(Ts);
