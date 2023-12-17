@@ -59,14 +59,13 @@ classdef MpcControl_z < MpcControlBase
             % g = [80 -50]';
             g = [24 6]';
 
-            % ----- COMPUTE TERMINAL INVARIANT SET ----- %
-
-            % Q = 15 * eye(2);
-            % Q(1,1) = 50; % vel
-            % Q(2,2) = 15; % pos z
-            Q = diag([10 1]);
-            R = 0.01;
+            % Q = diag([1000 10000]);
+            % R = 0.1;
+            Q = diag([1 20]);
+            R = 0.0001;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
+
+            % ----- ADD CONSTRAINTS ----- %
             
             % add constraints and objective to YALMIN optimization solver
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (G*U(:,1) <= g);
