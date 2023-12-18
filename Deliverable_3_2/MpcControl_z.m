@@ -120,7 +120,8 @@ classdef MpcControl_z < MpcControlBase
 
             % input constraints
             G = [1 -1]';
-            g = [0.26; 0.26];
+            % g = [80 -50]';
+            g = [23.3333 6.6667]';
             
             obj = us^2;
             con = (eye(2)-mpc.A)*xs-mpc.B*us == 0;

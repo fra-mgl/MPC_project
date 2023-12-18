@@ -68,10 +68,10 @@ classdef MpcControl_z < MpcControlBase
             % ----- ADD CONSTRAINTS ----- %
             
             % add constraints and objective to YALMIN optimization solver
-            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (G*U(:,1) <= g);
+            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1) + mpc.B*d_est) + (G*U(:,1) <= g);
             obj = U(:,1)'*R*U(:,1);
             for i = 2:N-1
-                con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
+                con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i) + mpc.B*d_est);
                 con = con + (G*U(:,i) <= g);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref);
                 %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
@@ -121,16 +121,17 @@ classdef MpcControl_z < MpcControlBase
 
             % input constraints
             G = [1 -1]';
-            g = [0.26; 0.26];
+            % g = [80 -50]';
+            g = [23.3333 6.6667]';
 
             % compute steady-state considering disturbance
             Bd = mpc.B;
-            Cd = 1;
+            Cd = 0;
             % replace using function
             
             obj = us^2;
-            con = (eye(2)-mpc.A)*xs-mpc.B*us == 0;%Bd*d_est; %
-            con = [con, mpc.C*xs + Cd*d_est == ref];
+            con = (eye(2)-mpc.A)*xs-mpc.B*us == Bd*d_est; %
+            con = [con, mpc.C*xs == ref];
             con = [con, G*us<=g];
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
@@ -164,7 +165,7 @@ classdef MpcControl_z < MpcControlBase
 
             A_bar = [mpc.A, mpc.B; zeros(1,nx), 1];
             B_bar = [mpc.B;zeros(1,nu)];
-            C_bar = [mpc.C,1];
+            C_bar = [mpc.C,0];
             L = -place(A_bar',C_bar',[0.5,0.6,0.7])';
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
