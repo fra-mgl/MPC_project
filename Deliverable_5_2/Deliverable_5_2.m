@@ -1,4 +1,4 @@
-addpath(fullfile('.', 'src'));
+addpath(fullfile('..', 'src'));
 %addpath(fullfile('.', 'Deliverable_5_1/'));
 
 close all
@@ -35,7 +35,7 @@ ref = [1.2, 0, 3, 0]';
 rocket.mass = 2.13;
 rocket.mass_rate = -0.27;
 
-% [T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
+%[T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
 
 [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 
@@ -47,3 +47,19 @@ ph.fig.Name = 'Merged lin. MPC in nonlinear simulation'; % Set a figure title
 
 % [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 % Z_hat(end,:)
+
+%%
+
+% TODO: simulazione con constraints sull'input come in precedenza (56-80)
+% si vede che il razzo comincia a salire perchè la massa è diminuita
+
+% abbassiamo constraint sull'input perchè perdendo massa, hovering non è
+% più vincolato a 56% ma a un valore minore di Pavg
+% facendo così la reference viene traccata bene finchè c'è carburante nel
+% razzo
+% quando questo finisce, il razzo inizia la caduta libera e per compensare
+% il controllore satura l'input a 80%
+% dopo alcuni secondi in questa situazione, il problema MPC diventa
+% infeasible ma a questo punto il contesto fisico in cui ci troviamo perde
+% di significato (ie. razzo in caduta libera e senza possibilità di
+% controllo perchè il carburante è finito
