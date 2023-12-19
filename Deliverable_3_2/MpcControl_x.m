@@ -53,7 +53,7 @@ classdef MpcControl_x < MpcControlBase
 
             % add constraints and objective to YALMIN optimization solver
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (G*U(:,1) <= g);
-            obj = U(:,1)'*R*U(:,1);
+            obj = (U(:,1)-u_ref)'*R*((U(:,1)-u_ref));
             for i = 2:N-1
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (F*X(:,i) <= f) + (G*U(:,i) <= g);
@@ -100,11 +100,16 @@ classdef MpcControl_x < MpcControlBase
             % input constraints
             G = [1 -1]';
             g = [0.26; 0.26];
+
+             % state constraints
+            F = [0 1 0 0 ; 0 -1 0 0];
+            f = [0.17; 0.17];
             
             obj = us^2;
             con = (eye(4)-mpc.A)*xs-mpc.B*us == 0;
             con = [con, mpc.C*xs==ref];
             con = [con, G*us<=g];
+            con = [con, (F*xs<=f)];
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
