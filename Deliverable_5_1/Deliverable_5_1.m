@@ -32,9 +32,8 @@ x0 = [zeros(1, 9), 1 0 3]';
 ref = [1.2, 0, 3, 0]';
 
 rocket.mass = 2.13;
-%rocket.mass_rate = -0.27;
 
-% [T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
+%[T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
 
 [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 
