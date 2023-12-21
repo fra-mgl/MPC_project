@@ -64,6 +64,24 @@ classdef MpcControl_y < MpcControlBase
                 O = intersect(O, Ocurr);
                 if isequal(O, Oprev)
                     omega_inf = O;
+
+                    figure; 
+                    subplot(1, 3, 1); 
+                    plot(omega_inf.projection(1:2));
+                    title('Projection 1-2');
+                    xlabel('Dimension 1');
+                    ylabel('Dimension 2');                  
+                    subplot(1, 3, 2);
+                    plot(omega_inf.projection(2:3));
+                    title('Projection 2-3');
+                    xlabel('Dimension 2');
+                    ylabel('Dimension 3');                
+                    subplot(1, 3, 3);
+                    plot(omega_inf.projection(3:4));
+                    title('Projection 3-4');
+                    xlabel('Dimension 3');
+                    ylabel('Dimension 4');
+                    
                     break;
                 end
             end

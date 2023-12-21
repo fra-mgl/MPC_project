@@ -61,7 +61,14 @@ classdef MpcControl_roll < MpcControlBase
                 Ocurr = polytope(FF * Acl, ff);
                 O = intersect(O, Ocurr);
                 if isequal(O, Oprev)
-                    omega_inf = O;
+                    omega_inf = O;                 
+
+                    figure;
+                    plot(omega_inf);
+                    title('Projection');
+                    xlabel('Dimension 1');
+                    ylabel('Dimension 2');
+
                     break;
                 end
             end
