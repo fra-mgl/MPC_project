@@ -1,5 +1,4 @@
-addpath(fullfile('.', 'src'));
-% addpath(fullfile('.', 'Deliverable_3_1/'));
+addpath(fullfile('..', 'src'));
 
 close all
 clear all
