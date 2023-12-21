@@ -67,60 +67,93 @@ classdef NmpcControl < handle
 
             f = @(x,u) rocket.f(x,u); %function handler for rocket dynamics
 
-            %Steady state parameters
-            X_s = [zeros(5,1) ; ref_sym(4,1) ; zeros(3,1) ; ref_sym(1:3,1)]; % steady-state state
+            % Tracking variables
+            % state tracking
+            T1 = zeros(nx,4);
+            T1(10, 1) = 1; % x
+            T1(11, 2) = 1; % y
+            T1(12, 3) = 1; % z
+            T1(6, 4) = 1; % gamma
+
+            % input tracking
+            T2 = zeros(nu,1);
+            T2(3) = 56.667; % Pavg to allow hovering
+
             
             
-            % ---- objective ---------
+            % --------- objective ---------
             
             Q=eye(12); 
             % Q(10,10) = 1125; Q(11,11) = 1125; Q(12,12) = 1125;
             % Q(7,7)=250; Q(8,8)=250; Q(9,9)=250;
             % Q(6,6)=500;
             R = eye(4);
+
+
+            % %         wx wy wz a b g   vx vy vz x    y    z
+            % Q = diag([30 30 1  1 1 500 20  20  20  5000 5000 5000]);
+            % %         d1     d2     pavg  pdiff
+            % R = diag([0.0001 0.0001 0.01 0.0001]);
+
+
             
             for k = 1:N-1
-                cost = cost + (U_sym(:,k))'*R*(U_sym(:,k));
-                cost = cost + (X_sym(:,k)-X_s)'*Q*(X_sym(:,k)-X_s);
+                cost = cost + (U_sym(:,k) - T2)' *R* (U_sym(:,k) - T2);
+                cost = cost + (X_sym(:,k) - T1*ref_sym)' *Q* (X_sym(:,k) - T1*ref_sym);
             end
-            cost = cost + (X_sym(:,end)-X_s)'*Q*(X_sym(:,end)-X_s);
-            % qui andrebbe terminal cost del sistema linearizzato
-            
+            cost = cost + (X_sym(:,end) - T1*ref_sym)' *Q* (X_sym(:,end) - T1*ref_sym);
+            % TODO: qui andrebbe terminal cost del sistema linearizzato -
+            % sostituire Q con P
 
-            % ---- Dynamics constraints -------
-            h=0.2;
-            for k=1:N-1 % loop over control intervals
-              eq_constr = [eq_constr ; X_sym(:,k+1) - RK4(X_sym(:,k), U_sym(:,k),h, f) ];
-            
-            
-            
-                % initial state
-                eq_constr = [eq_constr ; X_sym(:,1)-x0_sym];
-                
-                %------------state constraints-------------------------- 
-                
-                % contraindre Beta pour eviter la singularité
-                %opti.subject_to(deg2rad(-85) <= X_sym(5,:) <= deg2rad(85))
-                ineq_constr = [ineq_constr ; X_sym(5,k)-deg2rad(85)];
-                ineq_constr = [ineq_constr ; deg2rad(85)-X_sym(5,k)];
-    
-                
-                %------------------input constraints--------------------
-                % opti.subject_to(deg2rad(-15) <= U_sym(1,:) <= deg2rad(15))  % contrainte sur delta 1
-                % opti.subject_to(deg2rad(-15) <= U_sym(2,:) <= deg2rad(15))  % contrainte sur delta 2
-                % opti.subject_to(    20     <= U_sym(3,:) <= 80)          % contrainte sur Pavg
-                % opti.subject_to(    -20     <= U_sym(4,:) <= 20)          % contrainte sur Pdiff
-                
-                ineq_constr = [ineq_constr ; U_sym(1,k)-deg2rad(15)];
-                ineq_constr = [ineq_constr ; deg2rad(15)-U_sym(1,k)];
-                ineq_constr = [ineq_constr ; U_sym(2,k)-deg2rad(15)];
-                ineq_constr = [ineq_constr ; deg2rad(15)-U_sym(2,k)];
-                ineq_constr = [ineq_constr ; U_sym(3,k)-80];
-                ineq_constr = [ineq_constr ; 20-U_sym(3,k)];
-                ineq_constr = [ineq_constr ; U_sym(3,k)-20];
-                ineq_constr = [ineq_constr ; -20-U_sym(3,k)];
 
-            end
+            % --------- constraints ---------
+            lbu = [-0.26 -0.26 20 -20]';
+            ubu = [0.26 0.26 80  20]';
+
+             % constraint on gamma due to Euler representation -> ±75deg
+            lbx(6) = -1.31;
+            ubx(6) = 1.31;
+
+
+            % ------- TO BE REMOVED -------
+            % % ---- Dynamics constraints -------
+            % h=0.2;
+            % for k=1:N-1 % loop over control intervals
+            %   eq_constr = [eq_constr ; X_sym(:,k+1) - RK4(X_sym(:,k), U_sym(:,k),h, f) ];
+            % 
+            % 
+            % 
+            %     % initial state
+            %     eq_constr = [eq_constr ; X_sym(:,1)-x0_sym];
+            % 
+            %     %------------state constraints-------------------------- 
+            % 
+            %     % contraindre Beta pour eviter la singularité
+            %     %opti.subject_to(deg2rad(-85) <= X_sym(5,:) <= deg2rad(85))
+            %     ineq_constr = [ineq_constr ; X_sym(5,k)-deg2rad(85)];
+            %     ineq_constr = [ineq_constr ; deg2rad(85)-X_sym(5,k)];
+            % 
+            % 
+            %     %------------------input constraints--------------------
+            %     % opti.subject_to(deg2rad(-15) <= U_sym(1,:) <= deg2rad(15))  % contrainte sur delta 1
+            %     % opti.subject_to(deg2rad(-15) <= U_sym(2,:) <= deg2rad(15))  % contrainte sur delta 2
+            %     % opti.subject_to(    20     <= U_sym(3,:) <= 80)          % contrainte sur Pavg
+            %     % opti.subject_to(    -20     <= U_sym(4,:) <= 20)          % contrainte sur Pdiff
+            % 
+            %     ineq_constr = [ineq_constr ; U_sym(1,k)-deg2rad(15)];
+            %     ineq_constr = [ineq_constr ; deg2rad(15)-U_sym(1,k)];
+            %     ineq_constr = [ineq_constr ; U_sym(2,k)-deg2rad(15)];
+            %     ineq_constr = [ineq_constr ; deg2rad(15)-U_sym(2,k)];
+            %     ineq_constr = [ineq_constr ; U_sym(3,k)-80];
+            %     ineq_constr = [ineq_constr ; 20-U_sym(3,k)];
+            %     ineq_constr = [ineq_constr ; U_sym(3,k)-20];
+            %     ineq_constr = [ineq_constr ; -20-U_sym(3,k)];
+            % 
+            % end
+            % ------- TO BE REMOVED -------
+
+
+
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
