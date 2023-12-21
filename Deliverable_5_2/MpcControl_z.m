@@ -57,7 +57,8 @@ classdef MpcControl_z < MpcControlBase
             % input constraints
             G = [1 -1]';
             % g = [80 -50]';
-            g = [23.3333 36.6667]';
+            % g = [23.3333 36.6667]';
+            g = [23.3333 21.167]';
 
             % Q = diag([1000 10000]);
             % R = 0.1;
@@ -122,7 +123,8 @@ classdef MpcControl_z < MpcControlBase
             % input constraints
             G = [1 -1]';
             % g = [80 -50]';
-            g = [23.3333 36.6667]';
+            % g = [23.3333 36.6667]';
+            g = [23.3333 21.167]';
 
             % compute steady-state considering disturbance
             Bd = mpc.B;
