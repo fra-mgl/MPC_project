@@ -23,7 +23,9 @@ classdef NmpcControl < handle
     end
     
     methods
-        function obj = NmpcControl(rocket, tf)
+        function obj = NmpcControl(rocket, tf, expected_delay)
+
+            if nargin < 3, expected_delay = 0; end
            
             import casadi.*
             
@@ -82,23 +84,21 @@ classdef NmpcControl < handle
             
             
             % --------- objective ---------
-            % %         wx wy wz a b g   vx vy vz x    y    z
             Q = diag([15 15 15  1 1 700 15  15  15  7000 7000 7000]);
-            % %         d1     d2     pavg  pdiff
             R = diag([0.001 0.001 0.1 0.001]);
 
-            %---linearization for terminal cost----
+            % --------- linearization for terminal cost --------- 
             [xs, us] = rocket.trim();
             sys = rocket.linearize(xs, us);
+            sys = c2d(sys, rocket.Ts);
             [~,P,~] = dlqr(sys.A,sys.B,Q,R);
 
 
-            h=0.2;
             eq_constr = [eq_constr; X_sym(:,1)-x0_sym];
             for k = 1:N-1
                 cost = cost + (U_sym(:,k) - T2)' *R* (U_sym(:,k) - T2);
                 cost = cost + (X_sym(:,k) - T1*ref_sym)' *Q* (X_sym(:,k) - T1*ref_sym);
-                eq_constr = [eq_constr ; X_sym(:,k+1) - RK4(X_sym(:,k), U_sym(:,k),h, f) ]; %dynamics constraints
+                eq_constr = [eq_constr ; X_sym(:,k+1) - RK4(X_sym(:,k), U_sym(:,k), rocket.Ts, f) ]; %dynamics constraints
             end
             cost = cost + (X_sym(:,end) - T1*ref_sym)' *P* (X_sym(:,end) - T1*ref_sym); %terminal cost linearized system
             
@@ -184,7 +184,6 @@ classdef NmpcControl < handle
             obj.idx.u0 = obj.idx.U(1) + [0, obj.nu-1];
             
             % Members for delay compensation
-            expected_delay = 0;
             obj.rocket = rocket;
             obj.expected_delay = expected_delay;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -196,6 +195,8 @@ classdef NmpcControl < handle
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             obj.mem_u = repmat(u_init, 1, expected_delay);
+            % rows: input values
+            % columns: each col is a time step
         end
         
         function [u, T_opt, X_opt, U_opt] = get_u(obj, x0, ref)
@@ -204,11 +205,20 @@ classdef NmpcControl < handle
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             delay = obj.expected_delay;
             mem_u = obj.mem_u;
+
+            Ts = obj.rocket.Ts;
             
             % Delay compensation: Predict x0 delay timesteps later.
             % Simulate x_ for 'delay' timesteps
             x_ = x0;
             % ...
+            % euler intergration
+            x_cur = x0;
+            for i = 1:delay
+                x_ = x_cur + Ts * obj.rocket.f(x_cur, mem_u(:,i));
+                x_cur = x_;
+            end
+            
        
             x0 = x_;
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
@@ -226,7 +236,7 @@ classdef NmpcControl < handle
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % Delay compensation: Save current u
             if obj.expected_delay > 0
-               % obj.mem_u = ...
+               obj.mem_u = repmat(u, 1, delay);
             end
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
