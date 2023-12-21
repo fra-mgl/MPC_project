@@ -2,6 +2,7 @@ classdef MpcControl_z < MpcControlBase
     properties
         A_bar, B_bar, C_bar % Augmented system for disturbance rejection
         L                   % Estimator gain for disturbance rejection
+        omega_inf           % Terminal set
     end
     
     methods
@@ -13,7 +14,7 @@ classdef MpcControl_z < MpcControlBase
         
         % Design a YALMIP optimizer object that takes a steady-state state
         % and input (xs, us) and returns a control input
-        function ctrl_opti = setup_controller(mpc, Ts, H)
+        function [ctrl_opti, omega_inf] = setup_controller(mpc, Ts, H)
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % INPUTS
@@ -80,6 +81,13 @@ classdef MpcControl_z < MpcControlBase
                 O = intersect(O, Ocurr);
                 if isequal(O, Oprev)
                     omega_inf = O;
+
+                    figure;
+                    plot(omega_inf);
+                    title('Projection');
+                    xlabel('Dimension 1');
+                    ylabel('Dimension 2');
+
                     break;
                 end
             end

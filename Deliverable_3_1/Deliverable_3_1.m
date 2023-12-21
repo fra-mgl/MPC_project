@@ -1,4 +1,5 @@
 addpath(fullfile('..', 'src'));
+addpath("C:\Users\USER\Downloads\casadi-3.6.3-windows64-matlab2018b")
 
 close all
 clear all
@@ -42,6 +43,7 @@ ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us);
 clc;
 % Design MPC controller
 mpc_z = MpcControl_z(sys_z, Ts, H);
+% plot_omega_inf(mpc_z)
 
 x0 = [0 3]'; % vz, z
 % openloop
