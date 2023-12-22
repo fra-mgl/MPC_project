@@ -57,8 +57,8 @@ classdef MpcControl_z < MpcControlBase
             % input constraints
             G = [1 -1]';
             % g = [80 -50]';
-            % g = [23.3333 36.6667]';
-            g = [23.3333 21.167]';
+            %g = [23.3333 6.6667]'; % lower limit at 50%
+            g = [23.3333 21.167]'; % lower limit at 35% (hovering considering mass when fuel ends)
 
             % Q = diag([1000 10000]);
             % R = 0.1;
@@ -123,7 +123,7 @@ classdef MpcControl_z < MpcControlBase
             % input constraints
             G = [1 -1]';
             % g = [80 -50]';
-            % g = [23.3333 36.6667]';
+            %g = [23.3333 6.6667]';
             g = [23.3333 21.167]';
 
             % compute steady-state considering disturbance
@@ -168,7 +168,7 @@ classdef MpcControl_z < MpcControlBase
             A_bar = [mpc.A, mpc.B; zeros(1,nx), 1];
             B_bar = [mpc.B;zeros(1,nu)];
             C_bar = [mpc.C,0];
-            L = -place(A_bar',C_bar',[0.7,0.8,0.9])';
+            L = -place(A_bar',C_bar',[0.5,0.6,0.7])';
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
