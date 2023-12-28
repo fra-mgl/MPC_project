@@ -84,10 +84,10 @@ classdef NmpcControl < handle
             
             
             % --------- objective ---------
-            % %         wx wy wz a b g   vx vy vz x    y    z
-            Q = diag([20 25 25  1 1 500 15  15  15 3000 3000 3000]);
-            % %         d1     d2     pavg  pdiff
-            R = diag([0.0001 0.0001 0.01 0.0001]);
+            % %       wx wy wz a b g    vx vy vz x    y    z
+            Q = diag([80 80 80 1 1 3000 1  1  50 3000 3000 3000]);
+            % %       d1   d2   pavg  pdiff
+            R = diag([0.01 0.01 0.001 0.1]);
 
             %---linearization for terminal cost----
             [xs, us] = rocket.trim();

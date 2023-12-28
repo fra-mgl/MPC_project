@@ -84,13 +84,10 @@ classdef NmpcControl < handle
             
             
             % --------- objective ---------
-            % Q = diag([15 15 15  1 1 700 15  15  15  7000 7000 7000]);
-            % R = diag([0.001 0.001 0.1 0.001]);
-            % --------- objective ---------
-            % %         wx wy wz a b g   vx vy vz x    y    z
-            Q = diag([20 25 25  1 1 500 15  15  15 3000 3000 3000]);
-            % %         d1     d2     pavg  pdiff
-            R = diag([0.0001 0.0001 0.01 0.0001]);
+            % %       wx wy wz a b g    vx vy vz x    y    z
+            Q = diag([80 80 80 1 1 3000 1  1  50 3000 3000 3000]);
+            % %       d1   d2   pavg  pdiff
+            R = diag([0.01 0.01 0.001 0.1]);
 
 
             % --------- linearization for terminal cost --------- 
@@ -195,7 +192,8 @@ classdef NmpcControl < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
 
-            u_init = zeros(4, 1); % Replace this by a better initialization
+            % input is initialized in this way, as the rocket is hovering
+            u_init = zeros(4, 1);
             u_init(3) = 56.667;
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
@@ -240,7 +238,8 @@ classdef NmpcControl < handle
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
-            % Delay compensation: Save current u
+            % Delay compensation: Save current u to perform state
+            % estimation during next iteration
             if obj.expected_delay > 0
                obj.mem_u = repmat(u, 1, delay);
             end
