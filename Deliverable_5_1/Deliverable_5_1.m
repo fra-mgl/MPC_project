@@ -42,7 +42,7 @@ mpc = rocket.merge_lin_controllers(xs, us, mpc_x, mpc_y, mpc_z, mpc_roll);
 [T4, X4, U4, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
 
 % Visualize
-rocket.anim_rate = 1; % Increase this to make the animation faster
+rocket.anim_rate = 0.7; % Increase this to make the animation faster
 ph4 = rocket.plotvis(T4, X4, U4, Ref);
 ph4.fig.Name = 'Merged lin. MPC  disturbance without estimator'; % Set a figure title
 
@@ -62,8 +62,8 @@ mpc = rocket.merge_lin_controllers(xs, us, mpc_x, mpc_y, mpc_z, mpc_roll);
 [T, X, U, Ref, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 
 % Visualize
-rocket.anim_rate = 1; % Increase this to make the animation faster
+rocket.anim_rate = 0.7; % Increase this to make the animation faster
 ph = rocket.plotvis(T, X, U, Ref);
-ph.fig.Name = 'Merged lin. MPC ioffset free tracking'; % Set a figure title
+ph.fig.Name = 'Merged lin. MPC offset free tracking'; % Set a figure title
 
 %[T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
