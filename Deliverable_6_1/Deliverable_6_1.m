@@ -28,6 +28,7 @@ Tf = 30;
 rocket.anim_rate = 2;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
+ph.fig.Name = 'Nonlinear MPC'; % Set a figure title
 
 %% NONLINEAR controller w/ roll_max = 50°
 
@@ -46,6 +47,7 @@ Tf = 30;
 rocket.anim_rate = 2;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
+ph.fig.Name = 'Nonlinear MPC - roll_max = 50 deg'; % Set a figure title
 
 %% LINEAR controller w/ roll_max = 50°
 % Linear controllers are from Deliverable 4.1
@@ -75,4 +77,4 @@ Tf = 30;
 rocket.anim_rate = 2;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
-
+ph.fig.Name = 'Linear MPC - roll_max = 50 deg'; % Set a figure title

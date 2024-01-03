@@ -23,6 +23,7 @@ ref = [0.5, 0, 1, deg2rad(65)]';
 rocket.anim_rate = 1;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
+ph.fig.Name = 'Fully delay-compensating controller, delay=0.075s, horizon H=3s'; % Set a figure title
 
 %% TEST 2
 Tf = 2; % simulation time
@@ -41,7 +42,7 @@ ref = [0.5, 0, 1, deg2rad(65)]';
 rocket.anim_rate = 1;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
-
+ph.fig.Name = 'Fully delay-compensating controller, delay=0.125s, horizon H=4s'; % Set a figure title
 
 %% TEST 3
 Tf = 5; % simulation time
@@ -60,5 +61,5 @@ ref = [0.5, 0, 1, deg2rad(65)]';
 rocket.anim_rate = 1;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
-
+ph.fig.Name = 'Partially delay-compensating controller, expected delay=0.025s, actual delay = 0.075s, horizon H=2.5s'; % Set a figure title
 
