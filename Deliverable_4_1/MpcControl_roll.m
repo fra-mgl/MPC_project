@@ -43,8 +43,6 @@ classdef MpcControl_roll < MpcControlBase
             G = [1 -1]';
             g = [20; 20];
 
-            % Q = diag([1000 10000]);
-            % R = 0.1;
             Q = diag([1 20]);
             R = 0.001;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
@@ -58,7 +56,6 @@ classdef MpcControl_roll < MpcControlBase
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (G*U(:,i) <= g);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref);
-                %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
             end
            
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref);
@@ -95,6 +92,9 @@ classdef MpcControl_roll < MpcControlBase
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
             obj = 0;
             con = [xs == 0, us == 0];
+
+            % state constraints
+            % none
 
             % input constraints
             G = [1 -1]';

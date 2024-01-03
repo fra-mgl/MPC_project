@@ -84,9 +84,9 @@ classdef NmpcControl < handle
             
             
             % --------- objective ---------
-            % %       wx wy wz a b g    vx vy vz x    y    z
+            %         wx wy wz a b g    vx vy vz x    y    z
             Q = diag([80 80 80 1 1 3000 1  1  50 3000 3000 3000]);
-            % %       d1   d2   pavg  pdiff
+            %         d1   d2   pavg  pdiff
             R = diag([0.01 0.01 0.001 0.1]);
 
             %---linearization for terminal cost----
@@ -113,40 +113,6 @@ classdef NmpcControl < handle
             % constraint on gamma due to Euler representation -> ±75deg
             lbx(6) = -1.31;
             ubx(6) = 1.31;
-
-            
-             % ------- TO BE REMOVED -------
-            % 
-            %     % initial state
-            %     eq_constr = [eq_constr ; X_sym(:,1)-x0_sym];
-            % 
-            %     %------------state constraints-------------------------- 
-            % 
-            %     % contraindre Beta pour eviter la singularité
-            %     %opti.subject_to(deg2rad(-85) <= X_sym(5,:) <= deg2rad(85))
-            %     ineq_constr = [ineq_constr ; X_sym(5,k)-deg2rad(85)];
-            %     ineq_constr = [ineq_constr ; deg2rad(85)-X_sym(5,k)];
-            % 
-            % 
-            %     %------------------input constraints--------------------
-            %     % opti.subject_to(deg2rad(-15) <= U_sym(1,:) <= deg2rad(15))  % contrainte sur delta 1
-            %     % opti.subject_to(deg2rad(-15) <= U_sym(2,:) <= deg2rad(15))  % contrainte sur delta 2
-            %     % opti.subject_to(    20     <= U_sym(3,:) <= 80)          % contrainte sur Pavg
-            %     % opti.subject_to(    -20     <= U_sym(4,:) <= 20)          % contrainte sur Pdiff
-            % 
-            %     ineq_constr = [ineq_constr ; U_sym(1,k)-deg2rad(15)];
-            %     ineq_constr = [ineq_constr ; deg2rad(15)-U_sym(1,k)];
-            %     ineq_constr = [ineq_constr ; U_sym(2,k)-deg2rad(15)];
-            %     ineq_constr = [ineq_constr ; deg2rad(15)-U_sym(2,k)];
-            %     ineq_constr = [ineq_constr ; U_sym(3,k)-80];
-            %     ineq_constr = [ineq_constr ; 20-U_sym(3,k)];
-            %     ineq_constr = [ineq_constr ; U_sym(3,k)-20];
-            %     ineq_constr = [ineq_constr ; -20-U_sym(3,k)];
-            % 
-            
-            % ------- TO BE REMOVED -------
-
-
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,7 +158,8 @@ classdef NmpcControl < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
 
-            u_init = zeros(4, 1); % Replace this by a better initialization
+            % input is initialized in this way, as the rocket is hovering
+            u_init = zeros(4, 1);
             u_init(3) = 56.667;
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE

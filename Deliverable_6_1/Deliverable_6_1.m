@@ -11,17 +11,6 @@ H = 4; % Horizon length in seconds
 % NOTE: rocket and controlelr objects are re-initialized each time to
 % ensure no influence among different simulations
 
-%% OPEN-LOOP
-
-% x0 = zeros(12,1);
-% ref = -ones(4,1);
-% % Evaluate once and plot optimal open−loop trajectory,
-% % pad last input to get consistent size with time and state
-% [u, T_opt, X_opt, U_opt] = nmpc.get_u(x0, ref);
-% U_opt(:,end+1) = nan;
-% ph = rocket.plotvis(T_opt, X_opt, U_opt, ref);
-% ph.fig.Name = 'Open-loop nonlinear MPC.';
-
 
 %% NONLINEAR controller
 
@@ -59,7 +48,7 @@ rocket.anim_rate = 2;
 ph = rocket.plotvis(T, X , U , Ref);
 
 %% LINEAR controller w/ roll_max = 50°
-% addpath(fullfile('..', 'Deliverable_4_1')); % to get controllers from this directory
+% Linear controllers are from Deliverable 4.1
 
 % rocket initialization 
 rocket = Rocket(Ts);
@@ -74,9 +63,6 @@ mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 
 % Merge four sub−system controllers into one full−system controller
 mpc = rocket.merge_lin_controllers(xs, us, mpc_x, mpc_y, mpc_z, mpc_roll);
-
-% safely remove path of the other deliverable
-% rmpath(fullfile('..', 'Deliverable_4_1'));
 
 % MPC reference with specified maximum roll = 50 deg
 roll_max = deg2rad(50);

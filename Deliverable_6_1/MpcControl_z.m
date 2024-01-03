@@ -56,11 +56,8 @@ classdef MpcControl_z < MpcControlBase
             % linear_offset = 56.6667;
             % input constraints
             G = [1 -1]';
-            % g = [80 -50]';
             g = [23.3333 6.6667]';
 
-            % Q = diag([1000 10000]);
-            % R = 0.1;
             Q = diag([1 20]);
             R = 0.0001;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
@@ -74,7 +71,6 @@ classdef MpcControl_z < MpcControlBase
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (G*U(:,i) <= g);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref);
-                %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
             end
            
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref);

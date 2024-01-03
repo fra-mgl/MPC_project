@@ -44,8 +44,6 @@ classdef MpcControl_y < MpcControlBase
             G = [1 -1]';
             g = [0.26; 0.26];
 
-            % Q = diag([100 100 1000 10000]);
-            % R = 0.1;
             Q = diag([10 10 10 60]);
             R = 0.00001;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
@@ -65,7 +63,6 @@ classdef MpcControl_y < MpcControlBase
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (F*X(:,i) <= f + EPS(:,i)) + (G*U(:,i) <= g);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref) + ro(EPS(:,i)) + norm(EPS(:,i),1);
-                %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
             end
            
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref) + ro(EPS(:,N)) + norm(EPS(:,N),1);

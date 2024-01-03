@@ -20,7 +20,7 @@ x0 = zeros(12, 1);
 ref = [0.5, 0, 1, deg2rad(65)]';
 
 % SIMULATION
-rocket.anim_rate = 2;
+rocket.anim_rate = 1;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
 
@@ -38,7 +38,7 @@ x0 = zeros(12, 1);
 ref = [0.5, 0, 1, deg2rad(65)]';
 
 % SIMULATION
-rocket.anim_rate = 2;
+rocket.anim_rate = 1;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
 
@@ -57,7 +57,7 @@ x0 = zeros(12, 1);
 ref = [0.5, 0, 1, deg2rad(65)]';
 
 % SIMULATION
-rocket.anim_rate = 2;
+rocket.anim_rate = 1;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 ph = rocket.plotvis(T, X , U , Ref);
 
