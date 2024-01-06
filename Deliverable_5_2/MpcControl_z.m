@@ -47,8 +47,6 @@ classdef MpcControl_z < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
 
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            % obj = 0;
-            % con = [];
             
             % state constraints
             % none
@@ -56,26 +54,22 @@ classdef MpcControl_z < MpcControlBase
             % linear_offset = 56.6667;
             % input constraints
             G = [1 -1]';
-            % g = [80 -50]';
-            g = [23.3333 6.6667]'; % lower limit at 50%
-            %g = [23.3333 21.167]'; % lower limit at 35% (hovering considering mass when fuel ends)
+            g = [23.3333 6.6667]'; %limits on Pavg taking into account us
 
-            % Q = diag([1000 10000]);
-            % R = 0.1;
+            %Problem parameters
             Q = diag([1 100]);
             R = 0.0001;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
 
-            % ----- ADD CONSTRAINTS ----- %
-            
-            % add constraints and objective to YALMIN optimization solver
+           
+            %Add constraints and objective to YALMIP optimization solver
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1) + mpc.B*d_est) + (G*U(:,1) <= g);
             obj = (U(:,1)-u_ref)'*R*((U(:,1)-u_ref));
+
             for i = 2:N-1
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i) + mpc.B*d_est);
                 con = con + (G*U(:,i) <= g);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref);
-                %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
             end
            
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref);
@@ -117,20 +111,15 @@ classdef MpcControl_z < MpcControlBase
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-            obj = 0;
-            con = [xs == 0, us == 0];
 
             % input constraints
             G = [1 -1]';
-            % g = [80 -50]';
             g = [23.3333 6.6667]';
-            %g = [23.3333 21.167]';
 
             % compute steady-state considering disturbance
             Bd = mpc.B;
-            Cd = 0;
-            % replace using function
-            
+
+            %Objective and constraints of the optimization
             obj = us^2;
             con = (eye(2)-mpc.A)*xs-mpc.B*us == Bd*d_est; %
             con = [con, mpc.C*xs == ref];
@@ -160,14 +149,9 @@ classdef MpcControl_z < MpcControlBase
             nu   = size(mpc.B,2);
             ny   = size(mpc.C,1);
 
-            % A_bar = [mpc.A, mpc.B; zeros(1,nx), one(1, nu)];
-            % B_bar = [mpc.B;zeros(1,nu)];
-            % C_bar = [mpc.C,ones(ny,1)];
-            % L = -place(A_bar',C_bar',[0.5,0.6,0.7])';
-
-            A_bar = [mpc.A, mpc.B; zeros(1,nx), 1];
+            A_bar = [mpc.A, mpc.B; zeros(1,nx), ones(1,nu)];
             B_bar = [mpc.B;zeros(1,nu)];
-            C_bar = [mpc.C,0];
+            C_bar = [mpc.C, zeros(ny,1)];
             L = -place(A_bar',C_bar',[0.5,0.6,0.7])';
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE

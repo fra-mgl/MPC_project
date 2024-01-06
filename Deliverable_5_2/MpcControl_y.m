@@ -33,39 +33,34 @@ classdef MpcControl_y < MpcControlBase
             %       the DISCRETE-TIME MODEL of your system
             
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
-            obj = 0;
-            con = [];
-            
+           
             % state constraints
             F = [0 1 0 0 ; 0 -1 0 0];
-            f = [0.17; 0.17];
+            f = [0.17; 0.17]; %limits on alpha
             
             % input constraints
             G = [1 -1]';
-            g = [0.26; 0.26];
+            g = [0.26; 0.26]; %limits on the servo
 
-            % Q = diag([100 100 1000 10000]);
-            % R = 0.1;
+            %Problem parameters
             Q = diag([10 10 10 60]);
             R = 0.00001;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
 
             % ----- SLACK VARIABLES ----- %
-            % epsilon same dimension as state constraints
+            %Epsilon same dimension as state constraints
             EPS = sdpvar(2, N);
             S = diag([100 100]);
             ro = @(eps) eps'*S*eps;
 
-            % ----- ADD CONSTRAINTS ----- %
-
-            % add constraints and objective to YALMIN optimization solver
+            %Add constraints and objective to YALMIN optimization solver
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (G*U(:,1) <= g);
             obj = (U(:,1)-u_ref)'*R*((U(:,1)-u_ref));
+
             for i = 2:N-1
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (F*X(:,i) <= f + EPS(:,i)) + (G*U(:,i) <= g);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref) + ro(EPS(:,i)) + norm(EPS(:,i),1);
-                %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
             end
            
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref) + ro(EPS(:,N)) + norm(EPS(:,N),1);
@@ -101,17 +96,16 @@ classdef MpcControl_y < MpcControlBase
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-            obj = 0;
-            con = [xs == 0, us == 0];
-
+          
             % input constraints
             G = [1 -1]';
             g = [0.26; 0.26];
-            
+
             % state constraints
             F = [0 1 0 0 ; 0 -1 0 0];
             f = [0.17; 0.17];
-
+            
+            %Objective and constraints of the optimization
             obj = us^2;
             con = (eye(4)-mpc.A)*xs-mpc.B*us == 0;
             con = [con, mpc.C*xs==ref];
