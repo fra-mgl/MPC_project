@@ -6,7 +6,6 @@ clear all
 clc
 
 % %% TODO: This file should produce all the plots for the deliverable
-% aggiungere xs e us su output del controller
 
 Ts = 1/20; % Sample time
 Tf = 7; % simulation end time
@@ -18,13 +17,18 @@ sys = rocket.linearize(xs, us);
 H = 7; % Horizon length in seconds
 
 %% sys_x
-clc;
+
 % Design MPC controller
 mpc_x = MpcControl_x(sys_x, Ts, H);
 
 x0 = [0 0 0 3]'; % w_y, beta, v_x, x
 
-% simulation
+% open loop
+[u, T_opt, X_opt, U_opt] = mpc_x.get_u(x0);
+U_opt(:, end+1) = NaN;
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_x, xs, us);
+
+% close loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_x, x0, Tf, @mpc_x.get_u, 0);
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us);
 
@@ -35,33 +39,43 @@ mpc_y = MpcControl_y(sys_y, Ts, H);
 
 x0 = [0 0 0 3]'; % w_x, alpha, v_y, y
 
-% simulation
+% openloop
+[u, T_opt, X_opt, U_opt] = mpc_y.get_u(x0);
+U_opt(:, end+1) = NaN;
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_y, xs, us);
+
+% close loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_y, x0, Tf, @mpc_y.get_u, 0);
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us);
 
 %% sys_z
-clc;
+
 % Design MPC controller
 mpc_z = MpcControl_z(sys_z, Ts, H);
-% plot_omega_inf(mpc_z)
 
 x0 = [0 3]'; % vz, z
-% openloop
-% [u, T_opt, X_opt, U_opt] = mpc_z.get_u(x0);
-% U_opt(:, end+1) = NaN;
-% ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_z, xs, us);
 
-% simulation
+% open loop
+[u, T_opt, X_opt, U_opt] = mpc_z.get_u(x0);
+U_opt(:, end+1) = NaN;
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_z, xs, us);
+
+% close loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_z, x0, Tf, @mpc_z.get_u, 0);
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us);
 
 %% sys_roll
-clc;
+
 % Design MPC controller
 mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 
 x0 = [0 0.7]'; % wz, gamma 0.7 = 40 deg
 
-% simulation
+% open loop
+[u, T_opt, X_opt, U_opt] = mpc_roll.get_u(x0);
+U_opt(:, end+1) = NaN;
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_roll, xs, us);
+
+% close loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_roll, x0, Tf, @mpc_roll.get_u, 0);
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_roll, xs, us);

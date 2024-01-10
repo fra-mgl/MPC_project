@@ -57,7 +57,6 @@ classdef MpcControl_roll < MpcControlBase
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (G*U(:,i) <= g);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref);
-                %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
             end
            
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref);
