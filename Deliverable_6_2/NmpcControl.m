@@ -111,8 +111,8 @@ classdef NmpcControl < handle
             ubu = [0.26 0.26 80  20]';
 
             % constraint on gamma due to Euler representation -> ±75deg
-            lbx(6) = -1.31;
-            ubx(6) = 1.31;
+            lbx(5) = -1.31;
+            ubx(5) = 1.31;
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
