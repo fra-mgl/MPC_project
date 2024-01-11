@@ -72,7 +72,6 @@ classdef MpcControl_z < MpcControlBase
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref);
             end
            
-            con = con + (F*X(:,N) <= f);
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref);
 
             
