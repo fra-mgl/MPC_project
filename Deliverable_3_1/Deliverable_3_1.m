@@ -1,5 +1,4 @@
 addpath(fullfile('..', 'src'));
-addpath("C:\Users\USER\Downloads\casadi-3.6.3-windows64-matlab2018b")
 
 close all
 clear all
@@ -57,6 +56,7 @@ x0 = [0 3]'; % vz, z
 
 % open loop
 [u, T_opt, X_opt, U_opt] = mpc_z.get_u(x0);
+U_opt = U_opt + us(3); % to fix the plot
 U_opt(:, end+1) = NaN;
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_z, xs, us);
 
