@@ -207,7 +207,8 @@ classdef NmpcControl < handle
             % Delay compensation: Save current u to perform state
             % estimation during next iteration
             if obj.expected_delay > 0
-               obj.mem_u = repmat(u, 1, delay);
+               %obj.mem_u = repmat(u, 1, delay);
+               obj.mem_u = [obj.mem_u(:,2:end),u];
             end
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
