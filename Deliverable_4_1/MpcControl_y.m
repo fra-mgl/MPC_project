@@ -45,7 +45,7 @@ classdef MpcControl_y < MpcControlBase
             g = [0.26; 0.26];
 
             Q = diag([10 10 10 60]);
-            R = 0.00001;
+            R = 0.01;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
 
             % ----- SLACK VARIABLES ----- %
@@ -59,12 +59,15 @@ classdef MpcControl_y < MpcControlBase
             % add constraints and objective to YALMIN optimization solver
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (G*U(:,1) <= g);
             obj = (U(:,1)-u_ref)'*R*((U(:,1)-u_ref));
+            con = con + (EPS(:,1) >= 0);
             for i = 2:N-1
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (F*X(:,i) <= f + EPS(:,i)) + (G*U(:,i) <= g);
+                con = con + (EPS(:,i) >= 0);
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref) + ro(EPS(:,i)) + norm(EPS(:,i),1);
             end
            
+            con = con + (EPS(:,N) >= 0);
             con = con + (F*X(:,N) <= f);
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref) + ro(EPS(:,N)) + norm(EPS(:,N),1);
             
