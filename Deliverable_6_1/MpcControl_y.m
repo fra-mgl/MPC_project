@@ -65,6 +65,7 @@ classdef MpcControl_y < MpcControlBase
                 obj = obj + (X(:,i) - x_ref)'*Q*(X(:,i) - x_ref) + (U(:,i) - u_ref)'*R*(U(:,i) - u_ref) + ro(EPS(:,i)) + norm(EPS(:,i),1);
             end
            
+            con = con + (F*X(:,N) <= f);
             obj = obj + (X(:,N) - x_ref)'*P*(X(:,N) - x_ref) + ro(EPS(:,N)) + norm(EPS(:,N),1);
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
