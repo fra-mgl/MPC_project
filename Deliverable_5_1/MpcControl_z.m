@@ -123,7 +123,8 @@ classdef MpcControl_z < MpcControlBase
             obj = us^2;
             con = (eye(2)-mpc.A)*xs-mpc.B*us == Bd*d_est; %
             con = [con, mpc.C*xs == ref];
-            %con = [con, G*us<=g];
+            %con = [con, G*us<=g]; constraints on input removed to avoid
+            %unfeasibility due to large disturbance
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

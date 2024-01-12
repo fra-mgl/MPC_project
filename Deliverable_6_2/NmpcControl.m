@@ -87,7 +87,8 @@ classdef NmpcControl < handle
             %         wx wy wz a b g    vx vy vz x    y    z
             Q = diag([80 80 80 1 1 3000 1  1  50 3000 3000 3000]);
             %         d1   d2   pavg  pdiff
-            R = diag([0.01 0.01 0.001 0.1]);
+            %R = diag([0.01 0.01 0.001 0.1]);
+            R = diag([1000 1000 1 0.1]);
 
 
             % --------- linearization for terminal cost --------- 
@@ -207,8 +208,7 @@ classdef NmpcControl < handle
             % Delay compensation: Save current u to perform state
             % estimation during next iteration
             if obj.expected_delay > 0
-               %obj.mem_u = repmat(u, 1, delay);
-               obj.mem_u = [obj.mem_u(:,2:end),u];
+               obj.mem_u = [obj.mem_u(:,2:end),u];%store previous steps inputs
             end
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
