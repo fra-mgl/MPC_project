@@ -87,7 +87,6 @@ classdef NmpcControl < handle
             %         wx wy wz a b g    vx vy vz x    y    z
             Q = diag([80 80 80 1 1 3000 1  1  50 3000 3000 3000]);
             %         d1   d2   pavg  pdiff
-            %R = diag([0.01 0.01 0.001 0.1]);
             R = diag([1000 1000 1 0.1]);
 
 
