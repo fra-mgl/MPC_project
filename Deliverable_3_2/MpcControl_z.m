@@ -58,8 +58,6 @@ classdef MpcControl_z < MpcControlBase
             G = [1 -1]';
             g = [23.3333 6.6667]';
 
-            % ----- COMPUTE TERMINAL INVARIANT SET ----- %
-
             Q = 15 * eye(2);
             R = 1;
             [~, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller

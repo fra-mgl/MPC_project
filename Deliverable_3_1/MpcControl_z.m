@@ -57,14 +57,11 @@ classdef MpcControl_z < MpcControlBase
             % linear_offset = 56.6667;
             % input constraints
             G = [1 -1]';
-            % g = [80 -50]';
             g = [23.3333 6.6667]';
 
             % ----- COMPUTE TERMINAL INVARIANT SET ----- %
 
             Q = 15 * eye(2);
-            % Q(1,1) = 50; % vel
-            % Q(2,2) = 15; % pos z
             R = 1;
             [K, P,~] = dlqr(mpc.A, mpc.B, Q, R); % optimal LQR controller
             K = -K; % exercise u = Kx , matlab doc using u = -Kx
@@ -101,7 +98,6 @@ classdef MpcControl_z < MpcControlBase
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (G*U(:,i) <= g);
                 obj = obj + X(:,i)'*Q*X(:,i) + U(:,i)'*R*U(:,i);
-                % obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i)-U(:,i-1))'*R*U(:,i);
             end
             con = con + (M*X(:,N) <= m);
             obj = obj + X(:,N)'*P*X(:,N);

@@ -94,7 +94,6 @@ classdef MpcControl_x < MpcControlBase
                 con = con + (X(:,i+1) == mpc.A*X(:,i) + mpc.B*U(:,i));
                 con = con + (F*X(:,i) <= f) + (G*U(:,i) <= g);
                 obj = obj + X(:,i)'*Q*X(:,i) + U(:,i)'*R*U(:,i);
-                %obj = obj + X(:,i)'*Q*X(:,i) + (U(:,i) - U(:,i-1))'*R*(U(:,i) - U(:,i-1));
             end
             con = con + (M*X(:,N) <= m);
             obj = obj + X(:,N)'*P*X(:,N);
